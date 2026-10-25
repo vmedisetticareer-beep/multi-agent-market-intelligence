@@ -1,0 +1,298 @@
+{
+  "name": "Market Intelligence - Multi-Agent Orchestrator",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1104,
+        -304
+      ],
+      "id": "614aab81-f4b0-4728-ac77-fc659701b3be",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "187915ee-f4c8-4d94-975b-669b29681a01",
+              "name": "company",
+              "value": "= {{ $json.body?.company ?? $json.company ?? \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "3ccbca62-2e79-4957-bd19-eb39ada11fad",
+              "name": "=industry",
+              "value": "={{ $json.body?.industry ?? $json.industry ?? \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "1f90694c-52a7-407e-a97c-78d7f9c3faf6",
+              "name": "news_days",
+              "value": "={{ Number($json.body?.news_days ?? $json.news_days ?? 30) }}",
+              "type": "number"
+            },
+            {
+              "id": "f243d268-7242-4c4c-af4e-b579abebf86f",
+              "name": "competitor_count",
+              "value": "={{ Number($json.body?.competitor_count ?? $json.competitor_count ?? 3) }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -880,
+        -304
+      ],
+      "id": "79e85cc5-cfd5-404d-bfaf-922961793879",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "663f3711-15a1-4f71-8203-92f48511da23",
+          "mode": "list",
+          "cachedResultName": "Market Intelligence Research Pipeline"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "company": "={{ $json.company }}",
+            "industry": "={{ $json.industry }}",
+            "news_days": "=\n{{ Number($json.news_days ?? 30) }}",
+            "competitor_count": "=\n{{ Number($json.competitor_count ?? 3) }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "company",
+              "displayName": "company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "industry",
+              "displayName": "industry",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "news_days",
+              "displayName": "news_days",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "competitor_count",
+              "displayName": "competitor_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.4,
+      "position": [
+        -448,
+        -320
+      ],
+      "id": "fba3e2c0-acee-4e52-9fbf-2bf3b6298e3e",
+      "name": "Call 'Market Intelligence'"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "market-intelligence",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.2,
+      "position": [
+        -1104,
+        -96
+      ],
+      "id": "d14a330e-b3eb-48aa-94d3-84a77dc68446",
+      "name": "Webhook",
+      "webhookId": "54724438-2800-45c6-9b32-097bccbc6d99"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        -224,
+        -320
+      ],
+      "id": "db3cfd37-a43a-4333-88be-fea141cc3f0d",
+      "name": "Return Research Report"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "0623aa0a-42a3-4175-8be7-c5af3ee2aba8",
+              "leftValue": "={{ $json.company.trim() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "d5cda795-1d1b-4d53-9296-7aaa2087edda",
+              "leftValue": "={{ $json.industry.trim() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -704,
+        -304
+      ],
+      "id": "4013d851-5333-4924-a295-19e37ea0fb96",
+      "name": "Validate Research Input"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"success\": false,\n  \"error\": \"Company name and industry are required.\"\n}\n",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        -496,
+        -160
+      ],
+      "id": "110eca6f-a7cb-4b43-8bab-a0fc1da83771",
+      "name": "Return Input Error"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Validate Research Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'Market Intelligence'": {
+      "main": [
+        [
+          {
+            "node": "Return Research Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Research Input": {
+      "main": [
+        [
+          {
+            "node": "Call 'Market Intelligence'",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Return Input Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "nodeGroups": [],
+  "id": "5dd07dde-6478-487e-a3d6-66bf1472d702",
+  "tags": []
+}
