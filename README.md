@@ -183,7 +183,6 @@ response-shape details in [docs/architecture.md](docs/architecture.md).
 - [Agent responsibilities and contracts](docs/agent-design.md)
 - [Testing scenarios and limitations](docs/testing-results.md)
 - [Lessons learned and future enhancements](docs/lessons-learned.md)
-- [3–5 minute demonstration script](docs/demo-script.md)
 
 ## Project Demonstration and Screenshots
 
